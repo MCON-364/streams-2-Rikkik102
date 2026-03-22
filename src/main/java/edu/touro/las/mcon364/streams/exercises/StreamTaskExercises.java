@@ -59,7 +59,7 @@ public class StreamTaskExercises {
      */
     public Map<Boolean, Long> countDonePartition(List<Task> tasks) {
         return tasks.stream()
-                .collect(Collectors.partitioningBy(x -> x.status() == Status.DONE, Collectors.counting());
+                .collect(Collectors.partitioningBy(x -> x.status() == Status.DONE, Collectors.counting()));
     }
 
     /**
@@ -94,7 +94,8 @@ public class StreamTaskExercises {
     public String doneTaskSummary(List<Task> tasks) {
         return tasks.stream()
                 .filter(x -> x.status() == Status.DONE)
-                        .collect(Collectors.joining(", "));
+                .map(Task::description)
+                .collect(Collectors.joining(", "));
     }
 
     /**
@@ -114,7 +115,10 @@ public class StreamTaskExercises {
      * Return distinct assignees for DONE items in encounter order.
      */
     public List<String> distinctDoneAssignees(List<WorkItem> items) {
-        throw new UnsupportedOperationException("TODO");
+        return items.stream()
+                .filter(x -> x.status() == Status.DONE)
+                .flatMap(x -> x.assignees().stream())
+                .distinct().toList();
     }
 
     /**
@@ -122,7 +126,7 @@ public class StreamTaskExercises {
      * Build a map from work-item id to status.
      */
     public Map<String, Status> idToStatus(List<WorkItem> items) {
-        throw new UnsupportedOperationException("TODO");
+            return items.stream().collect(Collectors.toMap(WorkItem::id, WorkItem::status));
     }
 
     /**
@@ -130,6 +134,8 @@ public class StreamTaskExercises {
      * Group by priority and collect only titles.
      */
     public Map<Priority, List<String>> titlesByPriorityUsingMapping(List<WorkItem> items) {
-        throw new UnsupportedOperationException("TODO");
+        return items.stream()
+                .collect(Collectors.groupingBy(WorkItem::priority,
+                        Collectors.mapping(WorkItem::title, Collectors.toList())));
     }
 }
